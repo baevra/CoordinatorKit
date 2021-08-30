@@ -11,7 +11,7 @@ import UIKit
 public protocol FlowCoordinator: AnyObject, Identifiable {
   associatedtype Value
   var router: FlowRouter { get }
-  var coordinatorStorage: CoordinatorStorage { get }
+  var storage: CoordinatorStorage { get }
   var onFinish: ((Result<Value, FlowCoordinatorError>) -> Void)? { get set }
   func start()
 }
@@ -30,7 +30,7 @@ public extension FlowCoordinator {
     onFinish: @escaping (Result<Coordinator.Value, Error>) -> Void
   ) {
     let completion = { [unowned self, unowned coordinator] in
-      coordinatorStorage.remove(coordinator)
+      storage.remove(coordinator)
     }
     coordinator.onFinish = { result in
       switch result {
@@ -46,7 +46,7 @@ public extension FlowCoordinator {
         }
       }
     }
-    coordinatorStorage.append(coordinator)
+    storage.append(coordinator)
     coordinator.start()
   }
 }

@@ -27,4 +27,8 @@ public final class CoordinatorStorage {
       }
     }
   }
+
+  public func removeAll() {
+    childCoordinators.removeAll()
+  }
 }

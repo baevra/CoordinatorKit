@@ -9,7 +9,7 @@ import Foundation
 
 public protocol RootCoordinator: AnyObject {
   var router: RootRouter { get }
-  var childCoordinators: CoordinatorStorage { get }
+  var storage: CoordinatorStorage { get }
   func start()
 }
 
@@ -19,7 +19,7 @@ public extension RootCoordinator {
     onFinish: @escaping (Result<Coordinator.Value, Error>) -> Void
   ) {
     coordinator.onFinish = { [unowned self, unowned coordinator] result in
-      childCoordinators.remove(coordinator)
+      storage.remove(coordinator)
       switch result {
       case let .success(value):
         onFinish(.success(value))
@@ -28,7 +28,8 @@ public extension RootCoordinator {
         onFinish(.failure(error))
       }
     }
-    childCoordinators.append(coordinator)
+    storage.removeAll()
+    storage.append(coordinator)
     coordinator.start()
   }
 }
