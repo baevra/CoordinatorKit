@@ -39,12 +39,12 @@ public extension FlowCoordinator {
       case let .failure(error):
         switch error {
         case .cancel:
-          completion()
           onCancel()
         case let .custom(error):
           onFinish(.failure(error))
         }
       }
+      completion()
     }
     storage.append(coordinator)
     coordinator.start()
