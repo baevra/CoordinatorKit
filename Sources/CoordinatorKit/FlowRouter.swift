@@ -10,11 +10,20 @@ import UIKit
 
 public final class FlowRouter: NSObject {
   public let navigationController: UINavigationController
+
   private(set) var pushCompletions: [UIViewController: () -> Void]
+  private(set) var pushPops: [UIViewController: () -> Void]
+
+  private(set) var presentDismisses: [UIPresentationController: () -> Void]
+
+  @objc dynamic var visibleViewController: UIViewController?
+  @objc dynamic var presentedViewController: UIViewController?
 
   public init(navigationController: UINavigationController) {
     self.navigationController = navigationController
     self.pushCompletions = [:]
+    self.pushPops = [:]
+    self.presentDismisses = [:]
     super.init()
     self.navigationController.delegate = self
   }
@@ -22,10 +31,21 @@ public final class FlowRouter: NSObject {
   public func present(
     _ presentable: Presentable,
     animated: Bool,
-    completion: (() -> Void)? = nil
+    completion: (() -> Void)? = nil,
+    onDismiss: (() -> Void)? = nil
   ) {
+    let viewController = presentable.viewController
+
+    if let onDismiss = onDismiss,
+       let presentationController = viewController.presentationController {
+      presentDismisses[presentationController] = onDismiss
+      presentationController.delegate = self
+    }
+
+    presentedViewController = viewController
+
     navigationController.present(
-      presentable.viewController,
+      viewController,
       animated: animated,
       completion: completion
     )
@@ -44,12 +64,17 @@ public final class FlowRouter: NSObject {
   public func push(
     _ presentable: Presentable,
     animated: Bool,
-    completion: (() -> Void)? = nil
+    completion: (() -> Void)? = nil,
+    onPop: (() -> Void)? = nil
   ) {
     let viewController = presentable.viewController
 
     if let completion = completion {
       pushCompletions[viewController] = completion
+    }
+
+    if let onPop = onPop {
+      pushPops[viewController] = onPop
     }
 
     navigationController.pushViewController(
@@ -62,14 +87,14 @@ public final class FlowRouter: NSObject {
     let popedViewController = navigationController
       .popViewController(animated: animated)
     guard let viewController = popedViewController else { return }
-    runCompletion(for: viewController)
+    runPops(for: viewController)
   }
 
   public func popToRoot(animated: Bool) {
     let popedViewControllers = navigationController
       .popToRootViewController(animated: animated)
     guard let viewControllers = popedViewControllers else { return }
-    viewControllers.forEach(runCompletion(for:))
+    viewControllers.forEach(runPops(for:))
   }
 
   public func setRoot(
@@ -80,13 +105,25 @@ public final class FlowRouter: NSObject {
       [presentable.viewController],
       animated: animated
     )
-    pushCompletions.forEach { $0.value() }
+    pushPops.forEach { $0.value() }
+  }
+
+  private func runDismiss(for controller: UIPresentationController) {
+    guard let onDismiss = presentDismisses[controller] else { return }
+    onDismiss()
+    presentDismisses.removeValue(forKey: controller)
   }
 
   private func runCompletion(for controller: UIViewController) {
-    guard let completion = pushCompletions[controller] else { return }
-    completion()
+    guard let complition = pushCompletions[controller] else { return }
+    complition()
     pushCompletions.removeValue(forKey: controller)
+  }
+
+  private func runPops(for controller: UIViewController) {
+    guard let onPop = pushPops[controller] else { return }
+    onPop()
+    pushPops.removeValue(forKey: controller)
   }
 }
 
@@ -96,10 +133,23 @@ extension FlowRouter: UINavigationControllerDelegate {
     didShow viewController: UIViewController,
     animated: Bool
   ) {
+    visibleViewController = viewController
+
+    runCompletion(for: viewController)
+
     guard let poppedViewController = navigationController.transitionCoordinator?.viewController(forKey: .from),
       !navigationController.viewControllers.contains(poppedViewController) else {
       return
     }
-    runCompletion(for: poppedViewController)
+    runPops(for: poppedViewController)
+  }
+}
+
+extension FlowRouter: UIAdaptivePresentationControllerDelegate {
+  public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    runDismiss(for: presentationController)
+
+    guard presentedViewController === presentationController.presentedViewController else { return }
+    presentedViewController = nil
   }
 }

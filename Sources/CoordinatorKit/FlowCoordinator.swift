@@ -8,6 +8,21 @@
 import Foundation
 import UIKit
 
+//public final class FlowCoordinator<Value>: NSObject, Identifiable {
+//  public typealias Value = Value
+//  public let router: FlowRouter
+//  public let storage: CoordinatorStorage
+//
+//  public var onFinish: ((Result<Value, FlowCoordinatorError>) -> Void)?
+//
+//  public init(router: FlowRouter) {
+//    self.router = router
+//    self.storage = .init()
+//  }
+//
+//  public func start() {}
+//}
+
 public protocol FlowCoordinator: AnyObject, Identifiable {
   associatedtype Value
   var router: FlowRouter { get }
@@ -29,10 +44,41 @@ public extension FlowCoordinator {
     onCancel: @escaping () -> Void,
     onFinish: @escaping (Result<Coordinator.Value, Error>) -> Void
   ) {
+    let initialVisibleViewController = router.navigationController.visibleViewController
+
+    var visibleViewControllerObservation: NSKeyValueObservation?
+    var presentedViewControllerObservation: NSKeyValueObservation?
+
     let completion = { [unowned self, unowned coordinator] in
       storage.remove(coordinator)
+      visibleViewControllerObservation?.invalidate()
+      presentedViewControllerObservation?.invalidate()
     }
-    coordinator.onFinish = { result in
+
+    visibleViewControllerObservation = router.observe(
+      \.visibleViewController,
+       options: .new
+    ) { _, change in
+      guard let viewController = change.newValue,
+            initialVisibleViewController === viewController
+      else { return }
+
+      completion()
+    }
+
+    presentedViewControllerObservation = router.observe(
+      \.presentedViewController,
+       options: [.old, .new]
+    ) { _, change in
+      guard let oldViewController = change.oldValue,
+            let newViewController = change.newValue,
+            oldViewController != nil && newViewController == nil
+      else { return }
+
+      completion()
+    }
+
+    coordinator.onFinish = { [unowned self] result in
       switch result {
       case let .success(value):
         onFinish(.success(value))
@@ -44,7 +90,10 @@ public extension FlowCoordinator {
           onFinish(.failure(error))
         }
       }
-      completion()
+
+      if initialVisibleViewController == nil || router.presentedViewController != nil {
+        completion()
+      }
     }
     storage.append(coordinator)
     coordinator.start()
