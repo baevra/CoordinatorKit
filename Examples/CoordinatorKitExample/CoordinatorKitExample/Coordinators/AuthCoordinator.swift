@@ -41,10 +41,10 @@ final class AuthCoordinator: FlowCoordinator {
       vc,
       animated: true,
       completion: {
-        print("COMPLETION")
+//        print("COMPLETION")
       },
       onPop: {
-        print("POP")
+//        print("POP")
       }
     )
   }
@@ -61,10 +61,10 @@ final class AuthCoordinator: FlowCoordinator {
       vc,
       animated: true,
       completion: {
-        print("COMPLETION 2")
+//        print("COMPLETION 2")
       },
       onPop: {
-        print("POP 2")
+//        print("POP 2")
       }
     )
   }

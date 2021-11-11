@@ -26,7 +26,17 @@ final class OnboardingCoordinator: FlowCoordinator {
   }
 
   func start() {
-    startGreen()
+    startAuth0()
+//    startGreen()
+  }
+
+  func startAuth0() {
+    let coordinator = AuthCoordinator(router: router)
+    start(coordinator) { [unowned self] result in
+      guard case .success = result else { return }
+      startGreen()
+//      finish()
+    }
   }
 
   func startGreen() {

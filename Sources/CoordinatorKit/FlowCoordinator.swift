@@ -49,8 +49,8 @@ public extension FlowCoordinator {
     var visibleViewControllerObservation: NSKeyValueObservation?
     var presentedViewControllerObservation: NSKeyValueObservation?
 
-    let completion = { [unowned self, unowned coordinator] in
-      storage.remove(coordinator)
+    let completion = { [weak self, unowned coordinator] in
+      self?.storage.remove(coordinator)
       visibleViewControllerObservation?.invalidate()
       presentedViewControllerObservation?.invalidate()
     }
@@ -78,7 +78,7 @@ public extension FlowCoordinator {
       completion()
     }
 
-    coordinator.onFinish = { [unowned self] result in
+    coordinator.onFinish = { [weak self] result in
       switch result {
       case let .success(value):
         onFinish(.success(value))
@@ -91,7 +91,7 @@ public extension FlowCoordinator {
         }
       }
 
-      if initialVisibleViewController == nil || router.presentedViewController != nil {
+      if self?.storage.childCoordinators.isEmpty == true {
         completion()
       }
     }
