@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+#if canImport(UIKit)
+
 public struct FlowCoordinatorView<Coordinator: FlowCoordinator>: View {
   public let coordinator: Coordinator
 
@@ -34,3 +36,4 @@ private struct _CoordinatorView: UIViewControllerRepresentable {
     context: Context
   ) {}
 }
+#endif

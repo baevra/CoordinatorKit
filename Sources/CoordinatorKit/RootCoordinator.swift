@@ -6,12 +6,13 @@
 //
 
 import Foundation
-
 public protocol RootCoordinator: AnyObject {
   var router: RootRouter { get }
   var storage: CoordinatorStorage { get }
   func start()
 }
+
+#if canImport(UIKit)
 
 public extension RootCoordinator {
   func start<Coordinator: FlowCoordinator>(
@@ -33,3 +34,4 @@ public extension RootCoordinator {
     coordinator.start()
   }
 }
+#endif

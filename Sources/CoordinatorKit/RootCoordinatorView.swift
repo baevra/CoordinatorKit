@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 
 public struct RootCoordinatorView: View {
-  public let coordinator: (UIWindow) -> RootCoordinator
+  public let coordinator: (AppKitOrUIKitWindow) -> RootCoordinator
 
   @State private var rootCoordinator: RootCoordinator?
 
-  public init(coordinator: @escaping (UIWindow) -> RootCoordinator) {
+  public init(coordinator: @escaping (AppKitOrUIKitWindow) -> RootCoordinator) {
     self.coordinator = coordinator
   }
 
@@ -30,25 +30,34 @@ public struct RootCoordinatorView: View {
   }
 }
 
-extension View {
-  func withHostingWindow(_ callback: @escaping (UIWindow?) -> Void) -> some View {
+extension SwiftUI.View {
+  func withHostingWindow(_ callback: @escaping (AppKitOrUIKitWindow?) -> Void) -> some View {
     return background(
       HostingWindowFinder(callback: callback)
     )
   }
 }
 
-struct HostingWindowFinder: UIViewRepresentable {
-  var callback: (UIWindow?) -> ()
+struct HostingWindowFinder: AppKitOrUIKitViewRepresentable {
+  var callback: (AppKitOrUIKitWindow?) -> ()
 
-  func makeUIView(context: Context) -> UIView {
-    let view = UIView()
+  func makeUIView(context: Context) -> AppKitOrUIKitView {
+    makeView(content: context)
+  }
+  
+  func makeNSView(context: Context) -> AppKitOrUIKitView {
+    makeView(content: context)
+  }
+  
+  private func makeView(content: Context) -> AppKitOrUIKitView {
+    let view = AppKitOrUIKitView()
     DispatchQueue.main.async { [weak view] in
       self.callback(view?.window)
     }
     return view
   }
 
-  func updateUIView(_ uiView: UIView, context: Context) {
-  }
+  func updateUIView(_ uiView: AppKitOrUIKitView, context: Context) {}
+  
+  func updateNSView(_ nsView: AppKitOrUIKitView, context: Context) {}
 }

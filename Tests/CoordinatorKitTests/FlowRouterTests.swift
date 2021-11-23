@@ -1,6 +1,8 @@
 import XCTest
 @testable import CoordinatorKit
 
+#if canImport(UIKit)
+import UIKit
 final class FlowRouterTests: XCTestCase {
   var navigationController: UINavigationController!
   var router: FlowRouter!
@@ -13,6 +15,7 @@ final class FlowRouterTests: XCTestCase {
   func testCorrectSetup() {
     XCTAssertEqual(router.navigationController, navigationController)
     XCTAssertTrue(router.navigationController.viewControllers.isEmpty)
-    XCTAssertTrue(router.completions.isEmpty)
+    XCTAssertTrue(router.pushCompletions.isEmpty)
   }
 }
+#endif

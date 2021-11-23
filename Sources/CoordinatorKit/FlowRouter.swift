@@ -6,6 +6,7 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
 
 public final class FlowRouter: NSObject {
@@ -153,3 +154,4 @@ extension FlowRouter: UIAdaptivePresentationControllerDelegate {
     presentedViewController = nil
   }
 }
+#endif

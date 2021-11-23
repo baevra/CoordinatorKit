@@ -10,7 +10,7 @@ import SwiftUI
 
 extension View {
   func wrapToPresentable(title: String) -> Presentable {
-    let viewController = UIHostingController(rootView: self)
+    let viewController = AppKitOrUIKitHostingController(rootView: self)
     viewController.title = title
     return viewController
   }

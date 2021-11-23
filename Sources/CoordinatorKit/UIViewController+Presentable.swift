@@ -6,10 +6,14 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
-extension UIViewController: Presentable {
-  public var viewController: UIViewController {
+extension AppKitOrUIKitViewController: Presentable {
+  public var viewController: AppKitOrUIKitViewController {
     return self
   }
 }

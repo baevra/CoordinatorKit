@@ -6,6 +6,7 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
 
 //public final class FlowCoordinator<Value>: NSObject, Identifiable {
@@ -119,6 +120,7 @@ public extension FlowCoordinator where Value == Void {
     onFinish?(.success(()))
   }
 }
+#endif
 
 public enum FlowCoordinatorError: Error {
   case cancel

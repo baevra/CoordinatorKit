@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import UIKit
 
 public protocol Presentable {
-  var viewController: UIViewController { get }
+  var viewController: AppKitOrUIKitViewController { get }
 }
