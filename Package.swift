@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "CoordinatorKit",
-  platforms: [.iOS(.v13)],
+  platforms: [.iOS(.v11)],
   products: [
     .library(
       name: "CoordinatorKit",

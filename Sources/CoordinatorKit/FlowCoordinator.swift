@@ -8,22 +8,7 @@
 import Foundation
 import UIKit
 
-//public final class FlowCoordinator<Value>: NSObject, Identifiable {
-//  public typealias Value = Value
-//  public let router: FlowRouter
-//  public let storage: CoordinatorStorage
-//
-//  public var onFinish: ((Result<Value, FlowCoordinatorError>) -> Void)?
-//
-//  public init(router: FlowRouter) {
-//    self.router = router
-//    self.storage = .init()
-//  }
-//
-//  public func start() {}
-//}
-
-public protocol FlowCoordinator: AnyObject, Identifiable {
+public protocol FlowCoordinator: AnyObject {
   associatedtype Value
   var router: FlowRouter { get }
   var storage: CoordinatorStorage { get }
