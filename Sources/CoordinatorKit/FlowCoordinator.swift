@@ -1,7 +1,6 @@
 //
 //  FlowCoordinator.swift
 //
-//
 //  Created by Roman Baev on 30.06.2021.
 //
 
@@ -11,30 +10,36 @@ import UIKit
 public protocol FlowCoordinator: AnyObject, Identifiable {
   associatedtype Value
   var router: FlowRouter { get }
-  var storage: CoordinatorStorage { get }
-  var onFinish: ((Result<Value, FlowCoordinatorError>) -> Void)? { get set }
+  var completionHandler: ((Result<Value, FlowCoordinatorError>) -> Void)? { get set }
   func start()
 }
 
+private var flowCoordinatorStorageKey: Void?
 public extension FlowCoordinator {
-  func start<Coordinator: FlowCoordinator>(
-    _ coordinator: Coordinator,
-    onFinish: @escaping (Result<Coordinator.Value, Error>) -> Void
-  ) {
-    start(coordinator, onCancel: {}, onFinish: onFinish)
+  private var storage: CoordinatorStorage {
+    get {
+      guard let storage: CoordinatorStorage = getAssociatedObject(self, forKey: &flowCoordinatorStorageKey) else {
+        let storage = CoordinatorStorage()
+        setRetainedAssociatedObject(self, value: storage, forKey: &flowCoordinatorStorageKey)
+        return storage
+      }
+      return storage
+    }
+    set {
+      setRetainedAssociatedObject(self, value: newValue, forKey: &flowCoordinatorStorageKey)
+    }
   }
 
   func start<Coordinator: FlowCoordinator>(
     _ coordinator: Coordinator,
-    onCancel: @escaping () -> Void,
-    onFinish: @escaping (Result<Coordinator.Value, Error>) -> Void
+    completion: ((Result<Coordinator.Value, FlowCoordinatorError>) -> Void)? = nil
   ) {
     let initialVisibleViewController = router.navigationController.visibleViewController
 
     var visibleViewControllerObservation: NSKeyValueObservation?
     var presentedViewControllerObservation: NSKeyValueObservation?
 
-    let completion = { [weak self, unowned coordinator] in
+    let cleanup = { [weak self, unowned coordinator] in
       self?.storage.remove(coordinator)
       visibleViewControllerObservation?.invalidate()
       presentedViewControllerObservation?.invalidate()
@@ -48,7 +53,7 @@ public extension FlowCoordinator {
             initialVisibleViewController === viewController
       else { return }
 
-      completion()
+      cleanup()
     }
 
     presentedViewControllerObservation = router.observe(
@@ -60,24 +65,14 @@ public extension FlowCoordinator {
             oldViewController != nil && newViewController == nil
       else { return }
 
-      completion()
+      cleanup()
     }
 
-    coordinator.onFinish = { [weak self] result in
-      switch result {
-      case let .success(value):
-        onFinish(.success(value))
-      case let .failure(error):
-        switch error {
-        case .cancel:
-          onCancel()
-        case let .custom(error):
-          onFinish(.failure(error))
-        }
-      }
+    coordinator.completionHandler = { [weak self] result in
+      completion?(result)
 
       if self?.storage.childCoordinators.isEmpty == true {
-        completion()
+        cleanup()
       }
     }
     storage.append(coordinator)
@@ -87,21 +82,21 @@ public extension FlowCoordinator {
 
 public extension FlowCoordinator {
   func cancel() {
-    onFinish?(.failure(.cancel))
+    completionHandler?(.failure(.cancel))
   }
 
   func fail(error: Error) {
-    onFinish?(.failure(.custom(error)))
+    completionHandler?(.failure(.custom(error)))
   }
 
   func finish(_ value: Value) {
-    onFinish?(.success(value))
+    completionHandler?(.success(value))
   }
 }
 
 public extension FlowCoordinator where Value == Void {
   func finish() {
-    onFinish?(.success(()))
+    completionHandler?(.success(()))
   }
 }
 

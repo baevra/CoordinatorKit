@@ -1,7 +1,6 @@
 //
 //  FlowRouter.swift
 //
-//
 //  Created by Roman Baev on 30.07.2021.
 //
 
@@ -25,6 +24,7 @@ public final class FlowRouter: NSObject {
     self.pushPops = [:]
     self.presentDismisses = [:]
     super.init()
+    assert(navigationController.delegate == nil, "Navigation delegate conflict")
     self.navigationController.delegate = self
   }
 

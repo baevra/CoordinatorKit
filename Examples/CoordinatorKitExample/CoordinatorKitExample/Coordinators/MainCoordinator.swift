@@ -11,13 +11,11 @@ import CoordinatorKit
 
 final class MainCoordinator: FlowCoordinator {
   let router: FlowRouter
-  let storage: CoordinatorStorage
 
-  var onFinish: ((Result<Void, FlowCoordinatorError>) -> Void)?
+  var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
 
   init(router: FlowRouter) {
     self.router = router
-    self.storage = .init()
     print("MAIN START")
   }
 
@@ -49,9 +47,11 @@ final class MainCoordinator: FlowCoordinator {
     self.router.present(
       navigationController,
       animated: true,
-      completion: { print("COMPLETION") },
+      completion: {
+//        print("COMPLETION")
+      },
       onDismiss: {
-        print("ON DISMISS")
+//        print("ON DISMISS")
       }
     )
   }

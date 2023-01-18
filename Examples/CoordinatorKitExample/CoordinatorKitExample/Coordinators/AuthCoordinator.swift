@@ -11,13 +11,11 @@ import CoordinatorKit
 
 final class AuthCoordinator: FlowCoordinator {
   let router: FlowRouter
-  let storage: CoordinatorStorage
 
-  var onFinish: ((Result<Void, FlowCoordinatorError>) -> Void)?
+  var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
 
   init(router: FlowRouter) {
     self.router = router
-    self.storage = .init()
     print("AUTH INIT")
   }
 

@@ -13,7 +13,7 @@ final class OnboardingCoordinator: FlowCoordinator {
   let router: FlowRouter
   let storage: CoordinatorStorage
 
-  var onFinish: ((Result<Void, FlowCoordinatorError>) -> Void)?
+  var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
 
   init(router: FlowRouter) {
     self.router = router
@@ -26,33 +26,33 @@ final class OnboardingCoordinator: FlowCoordinator {
   }
 
   func start() {
-    startAuth0()
-//    startGreen()
+    startStep1()
   }
 
-  func startAuth0() {
-    let coordinator = AuthCoordinator(router: router)
-    start(coordinator) { [unowned self] result in
-      guard case .success = result else { return }
-      startGreen()
-//      finish()
-    }
-  }
-
-  func startGreen() {
+  func startStep1() {
     let vc = UIViewController()
-    vc.view.backgroundColor = .systemGreen
-    vc.navigationItem.title = "Green"
+    vc.view.backgroundColor = .systemRed
+    vc.navigationItem.title = "Onboarding step 1"
     vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
-      startMint()
+      startStep2()
     }
     router.push(vc, animated: true)
   }
 
-  func startMint() {
+  func startStep2() {
     let vc = UIViewController()
-    vc.view.backgroundColor = .systemMint
-    vc.navigationItem.title = "Mint"
+    vc.view.backgroundColor = .systemYellow
+    vc.navigationItem.title = "Onboarding step 2"
+    vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
+      startStep3()
+    }
+    router.push(vc, animated: true)
+  }
+
+  func startStep3() {
+    let vc = UIViewController()
+    vc.view.backgroundColor = .systemGreen
+    vc.navigationItem.title = "Onboarding step 3"
     vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
       startAuth()
     }
@@ -63,18 +63,8 @@ final class OnboardingCoordinator: FlowCoordinator {
     let coordinator = AuthCoordinator(router: router)
     start(coordinator) { [unowned self] result in
       guard case .success = result else { return }
-      startWhite()
+      finish()
     }
   }
 
-  func startWhite() {
-    let vc = UIViewController()
-    vc.view.backgroundColor = .white
-    vc.navigationItem.title = "White"
-    vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
-      finish()
-//      startAuth()
-    }
-    router.push(vc, animated: true)
-  }
 }
