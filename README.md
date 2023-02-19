@@ -1,8 +1,7 @@
 # CoordinatorKit
 
-An instrument to implement navigation via coordinator + router.
-Forked from [CoordinatorKit](https://github.com/baevra/CoordinatorKit).
+An tool to implement navigation via coordinator + router for both UIKit and SwiftUI screens.
 
 ## Installation
 
-Add the package via [Swift Package Manager](https://www.swift.org/package-manage/), here is the URL: `https://github.com/OlegEremenko991/CoordinatorKit`
+Add the package via [Swift Package Manager](https://www.swift.org/package-manage/), specify the URL to the repository.
