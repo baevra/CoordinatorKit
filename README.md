@@ -1,6 +1,6 @@
 # CoordinatorKit
 
-An tool to implement navigation via coordinator + router for both UIKit and SwiftUI screens.
+A tool to implement navigation via coordinator + router for both UIKit and SwiftUI screens.
 
 ## Installation
 
