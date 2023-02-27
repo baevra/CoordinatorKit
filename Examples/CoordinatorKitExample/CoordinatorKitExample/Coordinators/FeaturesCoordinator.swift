@@ -3,16 +3,10 @@ import CoordinatorKit
 
 final class FeaturesCoordinator: FlowCoordinator {
     let router: FlowRouter
-    
     var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
     
     init(router: FlowRouter) {
         self.router = router
-        print("FEATURES INIT")
-    }
-    
-    deinit {
-        print("FEATURES DEINIT")
     }
     
     func start() {

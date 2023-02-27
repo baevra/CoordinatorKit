@@ -3,18 +3,10 @@ import CoordinatorKit
 
 final class OnboardingCoordinator: FlowCoordinator {
     let router: FlowRouter
-    let storage: CoordinatorStorage
-    
     var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
     
     init(router: FlowRouter) {
         self.router = router
-        self.storage = .init()
-        print("Onboarding INIT")
-    }
-    
-    deinit {
-        print("Onboarding DEINIT")
     }
     
     func start() {

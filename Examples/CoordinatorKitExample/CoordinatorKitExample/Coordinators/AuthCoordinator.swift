@@ -3,16 +3,10 @@ import CoordinatorKit
 
 final class AuthCoordinator: FlowCoordinator {
     let router: FlowRouter
-    
     var completionHandler: ((Result<Void, FlowCoordinatorError>) -> Void)?
     
     init(router: FlowRouter) {
         self.router = router
-        print("AUTH INIT")
-    }
-    
-    deinit {
-        print("AUTH DEINIT")
     }
     
     func start() {
@@ -26,17 +20,7 @@ final class AuthCoordinator: FlowCoordinator {
         vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
             startStep2()
         }
-        
-        router.push(
-            vc,
-            animated: true,
-            completion: {
-                //        print("COMPLETION")
-            },
-            onPop: {
-                //        print("POP")
-            }
-        )
+        router.push(vc, animated: true, completion: {}, onPop: {})
     }
     
     func startStep2() {
@@ -46,16 +30,6 @@ final class AuthCoordinator: FlowCoordinator {
         vc.navigationItem.rightBarButtonItem = .next { [unowned self] _ in
             finish()
         }
-        
-        router.push(
-            vc,
-            animated: true,
-            completion: {
-                //        print("COMPLETION 2")
-            },
-            onPop: {
-                //        print("POP 2")
-            }
-        )
+        router.push(vc, animated: true, completion: {}, onPop: {})
     }
 }

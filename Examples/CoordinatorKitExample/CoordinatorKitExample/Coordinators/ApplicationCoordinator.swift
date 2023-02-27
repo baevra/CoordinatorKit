@@ -3,8 +3,7 @@ import CoordinatorKit
 
 final class ApplicationCoordinator: RootCoordinator {
     let router: RootRouter
-    let storage: CoordinatorStorage
-    
+
     init(router: RootRouter) {
         self.router = router
         self.storage = .init()
@@ -18,7 +17,7 @@ final class ApplicationCoordinator: RootCoordinator {
         let navigationController = UINavigationController()
         let router = FlowRouter(navigationController: navigationController)
         let coordinator = OnboardingCoordinator(router: router)
-        self.start(coordinator) { [unowned self] _ in
+        start(coordinator) { [unowned self] _ in
             startMain()
         }
         self.router.setRoot(navigationController)
@@ -28,7 +27,7 @@ final class ApplicationCoordinator: RootCoordinator {
         let navigationController = UINavigationController()
         let router = FlowRouter(navigationController: navigationController)
         let coordinator = MainCoordinator(router: router)
-        self.start(coordinator) { _ in }
+        start(coordinator)
         self.router.setRoot(navigationController)
     }
 }
