@@ -90,6 +90,14 @@ public final class FlowRouter: NSObject {
     runPops(for: viewController)
   }
 
+  public func popToPresentable(_ presentable: Presentable, animated: Bool) {
+    let viewController = presentable.viewController
+    let popedViewControllers = navigationController
+      .popToViewController(viewController, animated: animated)
+    guard let viewControllers = popedViewControllers else { return }
+    viewControllers.forEach(runPops(for:))
+  }
+
   public func popToRoot(animated: Bool) {
     let popedViewControllers = navigationController
       .popToRootViewController(animated: animated)
