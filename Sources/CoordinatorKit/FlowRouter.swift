@@ -15,8 +15,8 @@ public final class FlowRouter: NSObject {
 
   private(set) var presentDismisses: [UIPresentationController: () -> Void]
 
-  @objc dynamic var visibleViewController: UIViewController?
-  @objc dynamic var presentedViewController: UIViewController?
+  @objc dynamic weak var visibleViewController: UIViewController?
+  @objc dynamic weak var presentedViewController: UIViewController?
 
   public init(navigationController: UINavigationController) {
     self.navigationController = navigationController
