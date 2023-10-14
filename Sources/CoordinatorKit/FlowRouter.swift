@@ -1,10 +1,3 @@
-//
-//  FlowRouter.swift
-//
-//  Created by Roman Baev on 30.07.2021.
-//
-
-import Foundation
 import UIKit
 
 public final class FlowRouter: NSObject {
